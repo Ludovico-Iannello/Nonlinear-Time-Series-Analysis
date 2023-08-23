@@ -1,8 +1,10 @@
 import numpy as np
 from scipy.integrate import odeint
 from scipy.spatial import cKDTree as KDTree
+from scipy import stats
+import matplotlib.pyplot as plt
 ## dinamic equations Rossler
-def Rossler(X, t, a=0.2, b=0.2, c=6.3):
+def Rossler(X, t, a=0.15, b=0.2, c=10):
     x,y,z = X
     x_dot = -y - z
     y_dot = x + a*y
@@ -10,12 +12,12 @@ def Rossler(X, t, a=0.2, b=0.2, c=6.3):
     return (x_dot, y_dot, z_dot)
 
 ## Rossler attractor
-def Rossler_attractor(N,dt, a=0.2, b=0.2, c=6.3):
+def Rossler_attractor(N,dt, a=0.15, b=0.2, c=10):
     tmax = dt*N
     t = np.linspace(0, tmax, N)
 
     # The initial conditions
-    x0, y0, z0 = (1,1,1)
+    x0, y0, z0 = (-3.2916983, -1.42162302, 0.02197593)
 
     f = odeint(Rossler, (x0, y0, z0), t, args=(a, b, c))
     x, y, z = f.T
@@ -222,6 +224,47 @@ def mean_lyapunov_exp(x, max_l=500, window=10, metric='euclidean', maxnum=None):
         d[t] = np.mean(np.log(euclidean_dist(x[t1], x[t2])))
         t_arr[t]=t
     return d,t_arr
+
+
+def grassberg_procaccia(X,sigma):
+
+    n_points = len(X)
+
+    # Timeseries standard deviation
+    data_std = sigma
+
+    # Generate a series of r distances evenly spaced in log scale, these are
+    # generated starting from the timeseries of scalars standard deviation.
+    # The r distance is a scalar used to find the fraction of points in phase space for which
+    # the euclidean distance between them is smaller than r
+
+    r_vals = np.linspace(0.1 * data_std, 0.7 * data_std, 30)
+
+
+    distances = np.zeros(shape=(n_points,n_points))
+    r_matrix_base = np.zeros(shape=(n_points,n_points))
+
+    # Euclidean distance of points in phase space
+    for i in range(n_points):
+        for j in range(i,n_points):
+            distances[i][j] = np.linalg.norm(X[i]-X[j])
+            r_matrix_base[i][j] = 1
+
+    # Correlation sum
+    C_r = []
+    for r in r_vals:
+        r_matrix = r_matrix_base*r
+        heavi_matrix = np.heaviside( r_matrix - distances,0)
+        corr_sum = (2/float(n_points*(n_points-1)))*np.sum(heavi_matrix)
+        C_r.append(corr_sum)
+
+
+    return np.array(C_r),r_vals
+
+
+
+
+
 
 
 
