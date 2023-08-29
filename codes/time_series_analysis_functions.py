@@ -113,8 +113,6 @@ def corr_arr(x,maxtau=1000):
 def euclidean_dist(x, y):
     return np.sqrt(np.array(list(map(np.sum, (x - y) ** 2))))
 
-def chebyshev_dist(x, y):
-    return np.array(list(map(np.max, np.abs(x - y))))
 
 def neighbors(y, metric='chebyshev', window=0, maxnum=None):
     """Find nearest neighbors of all points in the given array.
@@ -231,16 +229,7 @@ def grassberg_procaccia(X,sigma):
 
     n_points = len(X)
 
-    # Timeseries standard deviation
-    data_std = sigma
-
-    # Generate a series of r distances evenly spaced in log scale, these are
-    # generated starting from the timeseries of scalars standard deviation.
-    # The r distance is a scalar used to find the fraction of points in phase space for which
-    # the euclidean distance between them is smaller than r
-
-    r_vals = np.linspace(0.1 * data_std, 0.7 * data_std, 30)
-
+    r_vals = np.linspace(0.1 * sigma, 0.7 * sigma, 30)
 
     distances = np.zeros(shape=(n_points,n_points))
     r_matrix_base = np.zeros(shape=(n_points,n_points))
