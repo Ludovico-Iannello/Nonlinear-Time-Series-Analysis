@@ -3,6 +3,7 @@ from scipy.integrate import odeint
 from scipy.spatial import cKDTree as KDTree
 from scipy import stats
 import matplotlib.pyplot as plt
+
 ## dinamic equations Rossler
 def Rossler(X, t, a=0.15, b=0.2, c=10):
     x,y,z = X
@@ -262,9 +263,15 @@ def grassberg_procaccia(X,sigma):
     return np.array(C_r),r_vals
 
 
+##Noise effect
+def noise_signal(x,SNR):
+    N=len(x)
+    mean = 0
+    std = np.std(x)/SNR
+    num_samples = N
+    samples = np.random.normal(mean, std, size=num_samples)
 
-
-
+    return x+samples
 
 
 
