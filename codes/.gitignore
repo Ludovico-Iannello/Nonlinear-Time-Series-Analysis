@@ -33,5 +33,5 @@
 *.txt
 
 # directory
-/.ipynb_checkpoints
-/__pycache__
+.ipynb_checkpoints/
+__pycache__/
